@@ -1,0 +1,5 @@
+** These DLL files only work on Windows machines **
+Steps:
+1) Add the DLL file in the same directory as the OpenSEES.exe file.
+2) Add the new materials to your code as you typically do for any other material. See attached PDF files for command sytax. No subroutine-sourcing is required in your main code.
+3) Make sure you are using OpenSEES executable v2.5.0 (revision 6536) or later.
