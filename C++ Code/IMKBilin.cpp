@@ -337,7 +337,8 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	}
 
 	//  Simple and unified notation for current bacbone parameters
-	if (Di >= 0.0) {
+	Mi_temp = Mi_1 + K_j * (Ri - Ri_1);
+	if (Mi_temp >= 0.0) {
 		Ki = K_j;
 		slope_pi = slope_p_pos_j;
 		slope_pci = slope_pc_pos_j;
