@@ -1,12 +1,3 @@
 *** UPDATE August 2020 ***
---> Use the provided OpenSEES executable (OpenSEES.exe) directly. This compiled executable contains the most updated IMK models.
-
-OR 
-
-Alternatively, you can use the provided DLLs with your executable, by following these steps:
-
-1) Add the DLL file in the same directory as the OpenSEES.exe file.
-2) Use the commands for the new materials in your tcl code as you typically do for any other material. See attached PDF files for command sytax. No subroutine-sourcing is required in your main code.
-3) Make sure you are using OpenSEES executable v2.5.0 (revision 6536) or later.
-
-** NOTE: These DLL files only work on Windows machines **
+--> Use the provided OpenSEES executable "OpenSees.exe" directly. This compiled executable contains the most updated IMK models.
+--> You will need to download the "tcl86t.dll" file and place it in the same directory as the executable.
