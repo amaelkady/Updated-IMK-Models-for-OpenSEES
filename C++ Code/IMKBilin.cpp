@@ -421,7 +421,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	if ((Ri <= 0.0) && (Di > 0.0) && (Fail_FlagNeg == 1)) {
 		Mi_boundary = Mr_pos0;
 	}
-	if ((Ri >= 0.0) && (Di < 0.0) && (Fail_FlagPos == 1)) {
+	else if ((Ri >= 0.0) && (Di < 0.0) && (Fail_FlagPos == 1)) {
 		Mi_boundary = -Mr_neg0;
 	}
 
@@ -431,13 +431,13 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	if (QuarterFlag == 1 && Di >= 0.0 && Mi >= Mi_boundary) {
 		Mi = Mi_boundary;
 	}
-	if (QuarterFlag == 3 && Di <= 0.0 && Mi <= Mi_boundary) {
+	else if (QuarterFlag == 3 && Di <= 0.0 && Mi <= Mi_boundary) {
 		Mi = Mi_boundary;
 	}
-	if (QuarterFlag == 2 && Mi <= Mi_boundary) {
+	else if (QuarterFlag == 2 && Mi <= Mi_boundary) {
 		Mi = Mi_boundary;
 	}
-	if (QuarterFlag == 4 && Mi >= Mi_boundary) {
+	else if (QuarterFlag == 4 && Mi >= Mi_boundary) {
 		Mi = Mi_boundary;
 	}
 
@@ -451,11 +451,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	}
 
 	// if fail flag is reached in any loading direction, set current moment equal to zero
-	if ((Fail_FlagPos == 1.0) || (Fail_FlagNeg == 1.0)) {
-		Mi = 0.0;
-	}
-
-	if (Energy_Flag == 1) {
+	if ((Fail_FlagPos == 1.0) || (Fail_FlagNeg == 1.0) || (Energy_Flag == 1)) {
 		Mi = 0.0;
 	}
 
