@@ -230,8 +230,8 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 		K_j = K_j_1;
 	}
 
-	//cout << " Ri_1=" << Ri_1 << " Ri=" << Ri << endln;
-	//cout << "                Ex_Flag=" << Excursion_Flag << " Rev_Flag=" << Reversal_Flag << " Mr+_Flag=" << Mrpos_Flag << " Mr-_Flag=" << Mrneg_Flag << " En_Flag=" << Energy_Flag << endln;
+	//cout << " Ri_1=" << Ri_1 << " Ri=" << Ri << " Di=" << Di << endln;
+	//cout << "                Ex_Flag=" << Excursion_Flag << " Rev_Flag=" << Reversal_Flag << " Yield_Flag=" << Yield_Flag << " Mr+_Flag=" << Mrpos_Flag << " Mr-_Flag=" << Mrneg_Flag << " En_Flag=" << Energy_Flag << endln;
 
 	//  Calculate Backbone parameters at current excursion based on Energy Dissipated in the previous Excursion
 	if (Excursion_Flag == 1.0) {
@@ -256,8 +256,8 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 			Theta_max_pos_j = fabs((MmaxProject_pos_j - MpeProject_pos_j) / (slope_pc_pos_j + slope_p_pos_j));
 			Mmax_pos_j = MpeProject_pos_j + Theta_max_pos_j * slope_p_pos_j;
 
-			if ((Mmax_pos_j - Mr_pos0) / (Theta_max_pos_j + fabs(Ri)) < slope_p_pos_j) {
-				slope_p_pos_j = (Mmax_pos_j - Mr_pos0) / (Theta_max_pos_j + abs(Ri));
+			if ((Mmax_pos_j - Mr_pos0) / (Theta_max_pos_j + fabs(Ri)- Mr_pos0/K_j) < slope_p_pos_j) {
+				slope_p_pos_j = (Mmax_pos_j - Mr_pos0) / (Theta_max_pos_j + fabs(Ri) - Mr_pos0 / K_j);
 				MpeProject_pos_j = Mpe_pos_j - slope_p_pos_j * Theta_y_pos_j;
 				Theta_max_pos_j = fabs((MmaxProject_pos_j - MpeProject_pos_j) / (slope_pc_pos_j + slope_p_pos_j));
 				Mmax_pos_j = MpeProject_pos_j + Theta_max_pos_j * slope_p_pos_j;
@@ -284,8 +284,8 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 			//double kp_res = (Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri));
 			//cout << "                kp_res=" << kp_res << " kp=" << slope_p_neg_j << " ************" << endln;
 
-			if ((Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri)) < slope_p_neg_j) {
-				slope_p_neg_j = (Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + abs(Ri));
+			if ((Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri) - Mr_neg0 / K_j) < slope_p_neg_j) {
+				slope_p_neg_j = (Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri) - Mr_neg0 / K_j);
 				MpeProject_neg_j = Mpe_neg_j - slope_p_neg_j * Theta_y_neg_j;
 				Theta_max_neg_j = fabs((MmaxProject_neg_j - MpeProject_neg_j) / (slope_pc_neg_j + slope_p_neg_j));
 				Mmax_neg_j = MpeProject_neg_j + Theta_max_neg_j * slope_p_neg_j;
@@ -402,9 +402,15 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	}
 	else if (QuarterFlag == 2) {
 		Mi_boundary = min(-Mr_neg0, -MpeProjecti + slope_pi * fabs(Ri));
+		if (Mi_boundary == -Mr_neg0 && TangentK==1.e-6) {
+			Mrneg_Flag = 1;
+		}
 	}
 	else if (QuarterFlag == 4) {
 		Mi_boundary = max(Mr_pos0, MpeProjecti - slope_pi * fabs(Ri));
+		if (Mi_boundary == Mr_pos0 && TangentK == 1.e-6) {
+			Mrneg_Flag = 1;
+		}
 	}
 
 
@@ -456,7 +462,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	if (Yield_Flag != 1) {
 		if (Ri >= Theta_y_pos0) {
 			Mi = Mpe_pos0 + slope_p_pos0 * (Ri - Theta_y_pos0);
-		} 
+		}
 		else {
 			Mi = Ke * (Ri);
 		}
@@ -468,6 +474,8 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 			Mi = Ke * (Ri);
 		}
 	}
+
+	//cout << "                Mi_1=" << Mi_1 << " Mi=" << Mi << " TangentK=" << TangentK << " Mbound=" << Mi_boundary << " Q=" << QuarterFlag << endln;
 
 	// %%%%%%%%%%%%% Energy Calculation %%%%%%%%%%%%%
 	Energy_total = Energy_total + (Mi + Mi_1) * 0.5 * (Ri - Ri_1); //  total energy dissipated till current incremental step
