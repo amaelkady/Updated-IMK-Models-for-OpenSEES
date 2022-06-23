@@ -41,7 +41,7 @@ OPS_IMKBilin(void)
 {
 	if (numIMKBilinMaterials == 0) {
 		numIMKBilinMaterials++;
-		OPS_Error("Mod. IMK Model with Bilinear Hysteretic Response - AE-Oct21\n", 1);
+		OPS_Error("Mod. IMK Bilinear Model - AE-June22\n", 1);
 	}
 
 	// Pointer to a uniaxial material that will be returned
@@ -217,7 +217,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 	// Update loading / unloading stiffness at load reversals
 	if (Reversal_Flag == 1) {
 		Rintrsct_K = Rreversal - Mreversal / K_j_1;
-		DISP_Rev = Energy_total - Energy_Excrsni_1 + 0.5*Mreversal *(Rintrsct_K - Rreversal);
+		DISP_Rev = Energy_total - Energy_Excrsni_1 - 0.5*Mreversal *(Rintrsct_K - Rreversal);
 		beta_K_j = pow((DISP_Rev / (2 * Ref_Energy_K - Energy_total + 0.5*Mreversal * (Rintrsct_K - Rreversal))), c_K);
 
 		K_j = K_j_1 * (1 - beta_K_j);
@@ -280,9 +280,6 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 			MpeProject_neg_j = Mpe_neg_j - slope_p_neg_j * Theta_y_neg_j;
 			Theta_max_neg_j = fabs((MmaxProject_neg_j - MpeProject_neg_j) / (slope_pc_neg_j + slope_p_neg_j));
 			Mmax_neg_j = MpeProject_neg_j + Theta_max_neg_j * slope_p_neg_j;
-
-			//double kp_res = (Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri));
-			//cout << "                kp_res=" << kp_res << " kp=" << slope_p_neg_j << " ************" << endln;
 
 			if ((Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri) - Mr_neg0 / K_j) < slope_p_neg_j) {
 				slope_p_neg_j = (Mmax_neg_j - Mr_neg0) / (Theta_max_neg_j + fabs(Ri) - Mr_neg0 / K_j);
@@ -413,9 +410,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
 		}
 	}
 
-
 	//cout << "                Mi_1=" << Mi_1 << " Mi=" << Mi << " TangentK=" << TangentK << " Mbound=" << Mi_boundary << " Q=" << QuarterFlag << endln;
-
 
 	// If Failure took place in a given direction (Fail_Flag_dir=1), Set the Boundary Moment in the opposite direction to Mr
 	if ((Ri <= 0.0) && (Di > 0.0) && (Fail_FlagNeg == 1)) {

@@ -22,7 +22,7 @@
 
 //**********************************************************************                                                                     
 // Code Developed by: Ahmed Elkady
-// Lecturer, University of SOuthampton
+// Lecturer, University of Southampton
 // Last Updated: October 25th 2021
 //**********************************************************************
 
