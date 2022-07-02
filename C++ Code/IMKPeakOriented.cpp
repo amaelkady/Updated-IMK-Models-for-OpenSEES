@@ -41,7 +41,7 @@ OPS_IMKPeakOriented()
 {
 	if (numIMKPeakOrientedMaterials == 0) {
 		numIMKPeakOrientedMaterials++;
-		OPS_Error("IMK with Peak-Oriented Response - Code by ELKADY & ELJISR (June22)\n", 1);
+		OPS_Error("IMK with Peak-Oriented Response - Code by Elkady & Eljisr (July22)\n", 1);
 	}
 
 	// Pointer to a uniaxial material that will be returned
@@ -149,7 +149,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 
 
 		// CHECK FOR UNLOADING
-		if ((fi_1 >= 0) && (du < 0) && (du*du_i_1 <= 0)) {
+		if ((fi_1 > 0) && (du < 0) && (du*du_i_1 <= 0)) {
 			Unloading_Flag = 1;
 			Reversal_Flag = 1;
 			Reloading_Flag = 0;
