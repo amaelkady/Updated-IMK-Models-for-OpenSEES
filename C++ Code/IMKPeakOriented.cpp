@@ -18,7 +18,7 @@
 **                                                                    **
 ** ****************************************************************** */
 #include <math.h>
-#include <IMKPeakOriented.h>
+#include <IMKPeakOriented_n.h>
 #include <elementAPI.h>
 #include <Vector.h>
 #include <Channel.h>
@@ -101,7 +101,11 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 	ui_1	= ui;
 	fi_1	= fi;
 	ui		= U;
-////////////////////////////////////////////////////////////  MAIN CODE //////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////  MAIN CODE //////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	du		= ui - ui_1;	// Incremental Deformation at Current Step
 	if (Failure_Flag) {		// When a failure has already occured
 		fi	= 0;
@@ -110,7 +114,13 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 		fi	= fi_1;
 		dEi	= 0;
 	} else {
-////////////////////////// BRANCH DETERMINATION AND FLAG RAISE ///////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		////////////////// BRANCH DETERMINATION AND FLAG RAISE ////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
 	// 	Branch 
 	// 		0:	Elastic
 	// 		1:	Unloading Branch
@@ -132,6 +142,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 		Excursion_Flag	= false;
 		Reversal_Flag	= false;
 		if (Branch == 0) {
+			// CHECK FOR YIELDING
 			if (ui > posUy_1) {
 				Yield_Flag	= true;
 				Branch	= 5;
@@ -141,6 +152,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			}
 		} else if (Branch == 1) {
 			if (fi_1*(fi_1+du*K_unload) <= 0) {
+			// CHECK FOR NEW EXCURSION
 				Excursion_Flag	= true;
 			} else if (ui > posULocal_1) {
 				Branch	= 4;
@@ -151,7 +163,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			Reversal_Flag	= true;
 			Branch	= 1;
 		}
-// Branch shifting from 3 -> 4 -> 5 -> 6 -> 7 can be considered.
+	// Branch shifting from 3 -> 4 -> 5 -> 6 -> 7 can be considered.
 		if (Branch == 3 && ui > posULocal_1) {
 			Branch	= 4;
 		}
@@ -176,30 +188,37 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 		if (Branch == 16 && ui < negUres_1) {
 			Branch	= 17;
 		}
-// Reflesh Peak Point
-		if (Reversal_Flag) {			// Reflesh Local Peak
+	// UPDATE PEAK POINTS
+		if (Reversal_Flag) {
 			if ( fi_1 > 0 ){
-				posULocal_1	= ui_1;				// Reflesh Local Peak
+				posULocal_1	= ui_1;				// UPDATE LOCAL
 				posFLocal_1	= fi_1;
-				if ( ui_1 > posUGlobal_1 ) {	// Reflesh Global Peak
+				if ( ui_1 > posUGlobal_1 ) {	// UPDATE GLOBAL
 					posUGlobal_1	= ui_1;
 					posFGlobal_1	= fi_1;
 				}			
 			} else {
-				negULocal_1	= ui_1;
+				negULocal_1	= ui_1;				// UPDATE LOCAL
 				negFLocal_1	= fi_1;
-				if ( ui_1 < negUGlobal_1 ) {
+				if ( ui_1 < negUGlobal_1 ) {	// UPDATE GLOBAL
 					negUGlobal_1	= ui_1;
 					negFGlobal_1	= fi_1;
 				}
 			}
 		}
-/////////////////////////// UPDATE DETERIORATION PARAMETERS ////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////// UPDATE DETERIORATION PARAMETERS ///////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
 		if (Reversal_Flag) {
 			EpjK	= Energy_Acc				- 0.5*(fi_1 / K_unload)*fi_1;
 			EiK		= Energy_Acc - Energy_Diss	- 0.5*(fi_1 / K_unload)*fi_1;
 			betaK	= pow( (EiK / (EtK - EpjK)), c_K );
 			K_unload	= K_unload * (1 - betaK);
+		// Detect unloading completed in a step.
 			if (fi_1*(fi_1+du*K_unload) <= 0) {
 				Excursion_Flag	= true;
 				Reversal_Flag	= false;
@@ -218,9 +237,16 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			betaC	= 0;
 			betaA	= 0;
 		}
-/////////////////////////// UPDATE BACKBONE CURVE ///////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////// UPDATE BACKBONE CURVE /////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
 		if ( Excursion_Flag && Yield_Flag ) {
-			if (fi_1 < 0) {		// Positive
+			// Positive
+			if (fi_1 < 0) {
 				// Basic strength deterioration: Yield point
 				// Basic strength deterioration: Post-yield Stiffness
 				posFy_1	= posFy_1	* (1 - betaS * D_pos);
@@ -250,17 +276,17 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 					posFGlobal_1	= max(posKpc_1*(posUGlobal_1 - posUcap_1) + posFcap_1, posFres_1);
 				}
 				posUres_1	= (posFres_1 - posFcap_1 + posKpc_1 * posUcap_1) / posKpc_1;
-				// Branch Update
-			} else {			// Negative
+			// Negative
+			} else {
 				// Basic strength deterioration: Yield point
-				negUy_1	= min(negUy_1 - negFy_1 * betaS* D_neg / Ke, negFres_1 / Ke);
-				negFy_1	= min(negFy_1 *(1 - betaS * D_neg), negFres_1);
 				// Basic strength deterioration: Post-yield stiffness
-				if (negFy_1 != negFres_1) {
-					negKp_1	= negKp_1 * (1 - betaS * D_neg);
-				} else {
+				negFy_1	= negFy_1	* (1 - betaS * D_neg);
+				negKp_1	= negKp_1	* (1 - betaS * D_neg);
+				if (negFy_1 > negFres_1) {
+					negFy_1	= negFres_1;
 					negKp_1	= 0;
 				}
+				negUy_1	= negFy_1 / Ke;
 				// Basic strength deterioration: Capping point
 				sPCsn		= (negFy_1 - negUy_1 * negKp_1 - negFcap_1 + negKpc_1 * negUcap_1) / (negKpc_1 - negKp_1);
 				negFcap_1	= negFcap_1 + (sPCsn - negUcap_1)*negKpc_1;
@@ -282,11 +308,18 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 					negFGlobal_1	= min(negKpc_1*(negUGlobal_1 - negUcap_1) + negFcap_1, negFres_1);
 				}
 				negUres_1	= (negFres_1 - negFcap_1 + negKpc_1 * negUcap_1) / negKpc_1;
-				// Branch Update
 			}
 		}
-///////////////////////////////////////// COMPUTE FORCE INCREMENT /////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////// COMPUTE FORCE INCREMENT /////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		// CASE 1: EACH NEW EXCURSION
 		if (Excursion_Flag) {
+			// Detection of reloading completed in a step might be needed, while it's not as severe as a one step unloading.
 			u0	= ui_1 - (fi_1 / K_unload);
 			if (du > 0) {
 				K_Local		= posFLocal_1	/ (posULocal_1	- u0);
@@ -311,6 +344,8 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			}
 			df	= 0				- fi_1 + K_reload*	(ui - u0);
 
+// With Branch Change
+	// Positive Force
 		} else if (Branch == 4 && exBranch != 4) {
 			K_reload	= (posFGlobal_1 - posFLocal_1) / (posUGlobal_1 - posULocal_1);
 			df	= posFLocal_1	- fi_1 + K_reload*	(ui - posULocal_1);
@@ -324,7 +359,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			df	= posFGlobal_1	- fi_1 + posKpc_1*	(ui - posUGlobal_1);
 		} else if (Branch == 7 && exBranch != 7) {
 			df	= posFres_1		- fi_1;
-
+	// Negative Force
 		} else if (Branch == 14 && exBranch != 14) {
 			K_reload	= (negFGlobal_1 - negFLocal_1) / (negUGlobal_1 - negULocal_1);
 			df			= negFLocal_1 - fi_1 + K_reload*(ui - negULocal_1);
@@ -338,43 +373,65 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 			df	= negFGlobal_1 - fi_1 + negKpc_1*(ui - negUGlobal_1);
 		} else if (Branch == 17 && exBranch != 17) {
 			df	= negFres_1 - fi_1;
-
+// Without Branch Change
+	// Positive Force
+		// CASE 0: AT THE ELASTIC SLOPE
 		} else if (Branch == 0) {
 			df	= du*Ke;
+		// CASE 2: WHEN RELOADING
+		// CASE 3: WHEN UNLOADING
 		} else if (Branch == 1) {
 			df	= du*K_unload;
+		// CASE 4: WHEN RELOADING BUT BETWEEN LAST CYCLE PEAK POINT AND GLOBAL PEAK POINT
+		// CASE 5: WHEN LOADING IN GENERAL TOWARDS THE TARGET PEAK
+		// CASE 6: WHEN LOADING IN GENERAL TOWARDS THE LAST CYCLE PEAK POINT BUT BEYOND IT
 		} else if (Branch == 3 || Branch == 4 || Branch == 13 || Branch == 14) {
 			df	= du*K_reload;
+		// CASE 7: WHEN LOADING BEYOND THE TARGET PEAK BUT BEFORE THE CAPPING POINT
 		} else if (Branch == 5) {
 			df	= du*posKp_1;
+		// CASE 8: WHEN LOADING AND BETWEEN THE CAPPING POINT AND THE RESIDUAL POINT
 		} else if (Branch == 6) {
 			df	= du*posKpc_1;
+		// CASE 9: WHEN LOADING AND BEYOND THE RESIDUAL POINT
 		} else if (Branch == 7) {
 			df	= 0.0;
-
+	// Negative Force
+		// CASE 7: WHEN LOADING BEYOND THE TARGET PEAK BUT BEFORE THE CAPPING POINT
 		} else if (Branch == 15) {
 			df	= du*negKp_1;
+		// CASE 8: WHEN LOADING AND BETWEEN THE CAPPING POINT AND THE RESIDUAL POINT
 		} else if (Branch == 16) {
 			df	= du*negKpc_1;
+		// CASE 9: WHEN LOADING AND BEYOND THE RESIDUAL POINT
 		} else if (Branch == 17) {
 			df	= 0.0;
 		}
+	// Branch Change check
 		// if (Branch!=exBranch) {
 		// 	std::cout << exBranch << " -> " << Branch << "\n";
 		// }
 		fi	= fi_1+df;
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////
 		// CHECK FOR FAILURE
-		// Failure criteria (Tolerance	= 1//) Don't Change
-		FailS	= ((betaS < -0.01) || (betaS > 1.01));
-		FailC	= ((betaC < -0.01) || (betaC > 1.01));
-		FailA	= ((betaA < -0.01) || (betaA > 1.01));
-		FailK	= ((betaK < -0.01) || (betaK > 1.01));
-		FailPp	= ( posFGlobal_1 == 0 );
-		FailPn	= ( negFGlobal_1 == 0 );
-		FailDp	= ( ui >  Uu_pos );
-		FailDn	= ( ui < -Uu_neg );	
-		FailRp	= ( (Branch ==  7) && (posFres_1 == 0));
-		FailRn	= ( (Branch == 17) && (negFres_1 == 0));
+		///////////////////////////////////////////////////////////////////////////////////////////		
+		///////////////////////////////////////////////////////////////////////////////////////////		
+		///////////////////////////////////////////////////////////////////////////////////////////		
+
+		// Failure criteria (Tolerance = 1//)
+	// I have no idea about why it can' t be 0 nor 1.
+		FailS	= ( betaS < -0.01 || betaS > 1.01	);
+		FailC	= ( betaC < -0.01 || betaC > 1.01	);
+		FailA	= ( betaA < -0.01 || betaA > 1.01	);
+		FailK	= ( betaK < -0.01 || betaK > 1.01	);
+		FailPp	= ( posFGlobal_1 == 0				);
+		FailPn	= ( negFGlobal_1 == 0				);
+		FailDp	= ( ui >  Uu_pos					);
+		FailDn	= ( ui < -Uu_neg					);	
+		FailRp	= ( Branch ==  7 && posFres_1 == 0	);
+		FailRn	= ( Branch == 17 && negFres_1 == 0	);
 		if (FailS||FailC||FailA||FailK||FailPp||FailPn||FailRp||FailRn||FailDp||FailDn) {
 			Failure_Flag	= true;
 		}
@@ -383,19 +440,20 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
 		}
 		dEi	= 0.5*(fi + fi_1)*du; // Internal energy increment
 	}
-	//// Energy
-	Energy_Acc	= Energy_Acc + dEi; 	
-	//// Update Variables
-	du_i_1	= du;
-	// Tangent Stiffeness Calculation
-	if ( du == 0 ) {
+	Energy_Acc	= Energy_Acc + dEi; 	// Energy
+	du_i_1		= du;					// Update Displacement
+	if ( du == 0 ) {					// Stiffness Calculation
 		ki			= Ke;
 		TangentK	= Ke;
 	} else {
 		ki			= (fi - fi_1) / (du);
 		TangentK	= (fi - fi_1) / (du);
 	}
-////////////////////////////////////////////////// END OF MAIN CODE ///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////// END OF MAIN CODE ///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	return 0;
 }
 double IMKPeakOriented::getStress(void)
@@ -448,21 +506,21 @@ int IMKPeakOriented::commitState(void)
 	cnegKp_1		= negKp_1;
 	cnegKpc_1		= negKpc_1;
 	cK_unload		= K_unload;
+	cK_reload		= K_reload;
 	cEnergy_Acc		= Energy_Acc;
 	cEnergy_Diss	= Energy_Diss;
-	cu0				= u0;
+	// cu0				= u0;
 	cposULocal_1	= posULocal_1;
 	cposFLocal_1	= posFLocal_1;
 	cnegULocal_1	= negULocal_1;
 	cnegFLocal_1	= negFLocal_1;
 	cFailure_Flag	= Failure_Flag;
-	cExcursion_Flag	= Excursion_Flag;
-	cReloading_Flag	= Reloading_Flag;
+	// cExcursion_Flag	= Excursion_Flag;
+	cexBranch		= exBranch;
 	cBranch			= Branch;
-	cTargetPeak_Flag= TargetPeak_Flag;
+	// cTargetPeak_Flag= TargetPeak_Flag;
 	cYield_Flag		= Yield_Flag;
-	cReversal_Flag	= Reversal_Flag;
-	cK_reload		= K_reload;
+	// cReversal_Flag	= Reversal_Flag;
 	return 0;
 }
 int IMKPeakOriented::revertToLastCommit(void)
@@ -497,6 +555,7 @@ int IMKPeakOriented::revertToLastCommit(void)
 	negKp_1			= cnegKp_1;
 	negKpc_1		= cnegKpc_1;
 	K_unload		= cK_unload;
+	K_reload		= cK_reload;
 	Energy_Acc		= cEnergy_Acc;
 	Energy_Diss		= cEnergy_Diss;
 	posULocal_1		= cposULocal_1;
@@ -504,14 +563,13 @@ int IMKPeakOriented::revertToLastCommit(void)
 	negULocal_1		= cnegULocal_1;
 	negFLocal_1		= cnegFLocal_1;
 	Failure_Flag	= cFailure_Flag;
-	Excursion_Flag	= cExcursion_Flag;
-	Reloading_Flag  = cReloading_Flag;
+	// Excursion_Flag	= cExcursion_Flag;
+	exBranch  		= cexBranch;
 	Branch  			= cBranch;
-	TargetPeak_Flag = cTargetPeak_Flag;
+	// TargetPeak_Flag = cTargetPeak_Flag;
 	Yield_Flag  	= cYield_Flag;
-	Reversal_Flag	= cReversal_Flag;
-	u0				= cu0;
-	K_reload		= cK_reload;
+	// Reversal_Flag	= cReversal_Flag;
+	// u0				= cu0;
 	return 0;
 }
 int IMKPeakOriented::revertToStart(void)
@@ -539,7 +597,6 @@ int IMKPeakOriented::revertToStart(void)
 	Fcap_neg		= FcapFy_neg*Fy_neg;
 	Kp_neg 			= (Fcap_neg - Fy_neg) / Up_neg;
 	Kpc_neg 		= Fcap_neg / Upc_neg;
-	//initially I zero everything
 	U				= cU			= 0;
 	ui		 		= cui			= 0;
 	fi		 		= cfi			= 0;
@@ -574,8 +631,8 @@ int IMKPeakOriented::revertToStart(void)
 	Branch 			= cBranch 			= 0;
 	Failure_Flag 	= cFailure_Flag	  	= false;
 	Excursion_Flag 	= cExcursion_Flag 	= false;
-	Reloading_Flag	= cReloading_Flag 	= false;
-	TargetPeak_Flag	= cTargetPeak_Flag	= false;
+	exBranch		= cexBranch 	= false;
+	// TargetPeak_Flag	= cTargetPeak_Flag	= false;
 	Yield_Flag		= cYield_Flag	  	= false;
 	Reversal_Flag	= cReversal_Flag  	= false;
 	K_unload		= cK_unload			= Ke;
@@ -628,8 +685,8 @@ IMKPeakOriented::getCopy(void)
 	theCopy->negFLocal_1	= negFLocal_1;
 	theCopy->Failure_Flag 	= Failure_Flag;
 	theCopy->Excursion_Flag = Excursion_Flag;
-	theCopy->Reloading_Flag = Reloading_Flag;
-	theCopy->TargetPeak_Flag= TargetPeak_Flag;
+	theCopy->exBranch 		= exBranch;
+	// theCopy->TargetPeak_Flag= TargetPeak_Flag;
 	theCopy->Yield_Flag 	= Yield_Flag;
 	theCopy->Reversal_Flag	= Reversal_Flag;
 	theCopy->K_reload		= K_reload;
@@ -669,8 +726,8 @@ IMKPeakOriented::getCopy(void)
 	theCopy->cnegFLocal_1	= cnegFLocal_1;
 	theCopy->cFailure_Flag	= cFailure_Flag;
 	theCopy->cExcursion_Flag= cExcursion_Flag;
-	theCopy->cReloading_Flag= cReloading_Flag;
-	theCopy->cTargetPeak_Flag= cTargetPeak_Flag;
+	theCopy->cexBranch		= cexBranch;
+	// theCopy->cTargetPeak_Flag= cTargetPeak_Flag;
 	theCopy->cYield_Flag 	= cYield_Flag;
 	theCopy->cReversal_Flag	= cReversal_Flag;
 	theCopy->cK_reload		= cK_reload;
@@ -734,8 +791,8 @@ int IMKPeakOriented::sendSelf(int cTag, Channel &theChannel)
 	data(50) 	= Failure_Flag;
 	data(51) 	= Excursion_Flag;
 	data(52) 	= Branch;
-	data(53) 	= Reloading_Flag;
-	data(54) 	= TargetPeak_Flag;
+	data(53) 	= exBranch;
+	// data(54) 	= TargetPeak_Flag;
 	data(55) 	= Yield_Flag;
 	data(56) 	= Energy_Acc;
 	data(57) 	= Energy_Diss;
@@ -808,14 +865,14 @@ int IMKPeakOriented::sendSelf(int cTag, Channel &theChannel)
 	data(124)	= cnegFLocal_1;
 	data(125)	= cFailure_Flag;
 	data(126)	= cExcursion_Flag;
-	data(127)	= cReloading_Flag;
+	data(127)	= cexBranch;
 	data(128)	= cBranch;
-	data(129)	= cTargetPeak_Flag;
+	// data(129)	= cTargetPeak_Flag;
 	data(130)	= cYield_Flag;
 	data(131)	= cK_reload;
 	data(132)	= K_Local;
 	data(133)	= K_Global;
-	data(134)	= K_check;
+	// data(134)	= K_check;
 	data(135)	= cReversal_Flag;
 	data(136)	= Reversal_Flag;
 	res			= theChannel.sendVector(this->getDbTag(), cTag, data);
@@ -884,9 +941,9 @@ int IMKPeakOriented::recvSelf(int cTag, Channel &theChannel, FEM_ObjectBroker &t
 		negKpc_1		= data(48);
 		Failure_Flag	= data(49);
 		Excursion_Flag	= data(50);
-		Reloading_Flag	= data(51);
+		exBranch		= data(51);
 		Branch			= data(52);
-		TargetPeak_Flag	= data(53);
+		// TargetPeak_Flag	= data(53);
 		Yield_Flag		= data(54);
 		K_unload		= data(55);
 		Energy_Acc		= data(56);
@@ -960,14 +1017,14 @@ int IMKPeakOriented::recvSelf(int cTag, Channel &theChannel, FEM_ObjectBroker &t
 		cnegFLocal_1	= data(124);
 		cFailure_Flag	= data(125);
 		cExcursion_Flag	= data(126);
-		cReloading_Flag	= data(127);
+		cexBranch		= data(127);
 		cBranch			= data(128);
-		cTargetPeak_Flag= data(129);
+		// cTargetPeak_Flag= data(129);
 		cYield_Flag   	= data(130);
 		cK_reload      	= data(131);
 		K_Local			= data(132);
 		K_Global		= data(133);
-		K_check			= data(134);
+		// K_check			= data(134);
 		cReversal_Flag	= data(135);
 		Reversal_Flag	= data(136);
 	}
