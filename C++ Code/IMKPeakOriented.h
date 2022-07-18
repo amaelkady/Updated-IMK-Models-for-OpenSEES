@@ -1,21 +1,21 @@
 /* ****************************************************************** **
-**  OpenSees - Open System for Earthquake Engineering Simulation    **
-**          Pacific Earthquake Engineering Research Center          **
-**                                                                  **
-**                                                                  **
-** (C) Copyright 1999, The Regents of the University of California  **
-** All Rights Reserved.                                             **
-**                                                                  **
-** Commercial use of this program without express permission of the **
-** University of California, Berkeley, is strictly prohibited.  See **
-** file 'COPYRIGHT' in main directory for information on usage and  **
-** redistribution,  and for a DISCLAIMER OF ALL WARRANTIES.         **
-**                                                                  **
-** Developed by:                                                    **
-**  Frank McKenna (fmckenna@ce.berkeley.edu)                        **
-**  Gregory L. Fenves (fenves@ce.berkeley.edu)                      **
-**  Filip C. Filippou (filippou@ce.berkeley.edu)                    **
-**                                                                  **
+**  OpenSees - Open System for Earthquake Engineering Simulation      **
+**          Pacific Earthquake Engineering Research Center            **
+**                                                                    **
+**                                                                    **
+** (C) Copyright 1999, The Regents of the University of California    **
+** All Rights Reserved.                                               **
+**                                                                    **
+** Commercial use of this program without express permission of the   **
+** University of California, Berkeley, is strictly prohibited.  See   **
+** file 'COPYRIGHT' in main directory for information on usage and    **
+** redistribution,  and for a DISCLAIMER OF ALL WARRANTIES.           **
+**                                                                    **
+** Developed by:                                                      **
+**  Frank McKenna (fmckenna@ce.berkeley.edu)                          **
+**  Gregory L. Fenves (fenves@ce.berkeley.edu)                        **
+**  Filip C. Filippou (filippou@ce.berkeley.edu)                      **
+**                                                                    **
 ** ****************************************************************** */
 
 //Modified Ibarra-Medina-Krawinkler with Peak-Oriented Hysteretic Response
@@ -33,25 +33,25 @@
 class IMKPeakOriented : public UniaxialMaterial
 {
 public:
-    IMKPeakOriented(int tag, double Ke,
-        double Uy_pos, double Ucap_pos, double Uu_pos, double Fy_pos, double FcapFy_pos, double ResF_pos,
-        double Uy_neg, double Ucap_neg, double Uu_neg, double Fy_neg, double FcapFy_neg, double ResF_neg,
-        double LAMBDA_S, double LAMBDA_C, double LAMBDA_A, double LAMBDA_K, double c_S, double c_C, double c_A, double c_K, double D_pos, double D_neg);
-    IMKPeakOriented();
-    ~IMKPeakOriented();
-    const char *getClassType(void) const { return "IMKPeakOriented"; };
-    int     setTrialStrain(double strain, double strainRate = 0.0);
-    double  getStrain(void);
-    double  getStress(void);
-    double  getTangent(void);
-    double  getInitialTangent(void);
-    int     commitState(void);
-    int     revertToLastCommit(void);
-    int     revertToStart(void);
-    UniaxialMaterial *getCopy(void);
-    int     sendSelf(int commitTag, Channel &theChannel);
-    int     recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker);
-    void     Print(OPS_Stream &s, int flag = 0);
+        IMKPeakOriented(int tag, double Ke,
+            double Uy_pos, double Ucap_pos, double Uu_pos, double Fy_pos, double FcapFy_pos, double ResF_pos,
+            double Uy_neg, double Ucap_neg, double Uu_neg, double Fy_neg, double FcapFy_neg, double ResF_neg,
+            double LAMBDA_S, double LAMBDA_C, double LAMBDA_A, double LAMBDA_K, double c_S, double c_C, double c_A, double c_K, double D_pos, double D_neg);
+        IMKPeakOriented();
+        ~IMKPeakOriented();
+        const char *getClassType(void) const { return "IMKPeakOriented"; };
+        int     setTrialStrain(double strain, double strainRate = 0.0);
+        double  getStrain(void);
+        double  getStress(void);
+        double  getTangent(void);
+        double  getInitialTangent(void);
+        int     commitState(void);
+        int     revertToLastCommit(void);
+        int     revertToStart(void);
+        UniaxialMaterial *getCopy(void);
+        int     sendSelf(int commitTag, Channel &theChannel);
+        int     recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker);
+        void     Print(OPS_Stream &s, int flag = 0);
 
 protected:
 
