@@ -128,7 +128,7 @@ private:
 
 	double du;
 	double df;
-
+	
 	bool   FailS;
 	bool   FailC;
 	bool   FailA;
@@ -165,7 +165,7 @@ private:
 	double sPCpcp, sPCpcn;
 
 	double TangentK, cTangentK, ki;
-	
+
 	double Uy_pos,		Uy_neg;
 	double Ucap_pos,	Ucap_neg;
 	double Fcap_pos,	Fcap_neg;
@@ -185,9 +185,9 @@ private:
 	bool    Yield_Flag,		cYield_Flag;
 	bool    Reversal_Flag,	cReversal_Flag;
 	int     exBranch,		cexBranch;
-	
+
 	double K_reload,       cK_reload;
-	
+
 	double K_Local;
 	double K_Global;
 	// double K_check;
