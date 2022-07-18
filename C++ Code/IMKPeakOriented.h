@@ -59,7 +59,7 @@ protected:
 private:
 	//my functions
 
-	//Fixed input material parameters
+	//Fixed input material parameters 	
 	double Ke;
 	double Up_pos;
 	double Upc_pos;
@@ -87,13 +87,13 @@ private:
 	//State variables 
 	double U, cU;
 
-	//History variables
+	//History variables	
 
 	double ui, 		cui;
 	double fi, 		cfi;
 	double ui_1,	cui_1;
 	double fi_1, 	cfi_1;
-	double du_i_1,	cdu_i_1;
+	double du_i_1,	cdu_i_1;	
 
 	double posUy_1,				cposUy_1;
 	double posUcap_1,			cposUcap_1;
@@ -176,7 +176,7 @@ private:
 	double posFLocal_1,		cposFLocal_1;
 	double negULocal_1,		cnegULocal_1;
 	double negFLocal_1,		cnegFLocal_1;
-//
+
 	bool    Failure_Flag,	cFailure_Flag;
 	bool    Excursion_Flag,	cExcursion_Flag;
 	// bool Reloading_Flag,	cReloading_Flag;
@@ -185,9 +185,9 @@ private:
 	bool    Yield_Flag,		cYield_Flag;
 	bool    Reversal_Flag,	cReversal_Flag;
 	int     exBranch,		cexBranch;
-//
+
 	double K_reload,       cK_reload;
-//
+
 	double K_Local;
 	double K_Global;
 	// double K_check;
