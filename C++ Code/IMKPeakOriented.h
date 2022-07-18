@@ -83,11 +83,11 @@ private:
 	double c_K;
 	double D_pos;
 	double D_neg;
-
+	
 	//State variables 
 	double U, cU;
-
-	//History variables	
+	
+	//History variables 
 
 	double ui, 		cui;
 	double fi, 		cfi;
@@ -123,7 +123,7 @@ private:
 
 	double Energy_Acc,  cEnergy_Acc;
 	double Energy_Diss, cEnergy_Diss;
-
+	
 	double u0, cu0;
 
 	double du;
@@ -165,18 +165,18 @@ private:
 	double sPCpcp, sPCpcn;
 
 	double TangentK, cTangentK, ki;
-
+	
 	double Uy_pos,		Uy_neg;
 	double Ucap_pos,	Ucap_neg;
 	double Fcap_pos,	Fcap_neg;
 	double Kpc_pos,		Kpc_neg;
 	double Kp_pos,		Kp_neg;
-
+	
 	double posULocal_1,		cposULocal_1;
 	double posFLocal_1,		cposFLocal_1;
 	double negULocal_1,		cnegULocal_1;
 	double negFLocal_1,		cnegFLocal_1;
-
+	
 	bool    Failure_Flag,	cFailure_Flag;
 	bool    Excursion_Flag,	cExcursion_Flag;
 	// bool Reloading_Flag,	cReloading_Flag;
@@ -185,14 +185,14 @@ private:
 	bool    Yield_Flag,		cYield_Flag;
 	bool    Reversal_Flag,	cReversal_Flag;
 	int     exBranch,		cexBranch;
-
+	
 	double K_reload,       cK_reload;
-
+	
 	double K_Local;
 	double K_Global;
 	// double K_check;
-
-
+	
+	
 };
 
 #endif
