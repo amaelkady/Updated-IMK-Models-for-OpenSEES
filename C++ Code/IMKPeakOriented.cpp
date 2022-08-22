@@ -41,7 +41,7 @@ OPS_IMKPeakOriented()
 {
 	if (numIMKPeakOrientedMaterials == 0) {
 		numIMKPeakOrientedMaterials++;
-		OPS_Error("IMK with Peak-Oriented Response - Code by Elkady & Eljisr (July22)\n", 1);
+		OPS_Error("IMK with Peak-Oriented Response - Code by Elkady & Eljisr (Aug22)\n", 1);
 	}
 
 	// Pointer to a uniaxial material that will be returned
@@ -817,7 +817,12 @@ int IMKPeakOriented::revertToStart(void)
 	//////////////////////////////////////////////////////////////////// ONE TIME CALCULATIONS ////////////////////////////////////////////////////////////////////\\
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-
+	if (ResF_pos == 0.0) {
+		ResF_pos = 0.01;
+	}
+	if (ResF_neg == 0.0) {
+		ResF_neg = 0.01;
+	}
 
 	betaS = 0;
 	betaC = 0;
