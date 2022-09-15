@@ -120,21 +120,28 @@ int IMKBilin::setTrialStrain(double	strain, double	strainRate)
     // Di_1    = Di;
     Ui      = U;
 
-    double dU   = Ui - Ui_1;
-    double dEi;
-    if (dU == 0) {
-        Fi  = Fi_1;
-        dEi = 0;
-    }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////  MAIN CODE //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%  MAIN CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Mpe_pos0 = Mpe_pos0;
+	Mmax_pos0 = MmaxMpe_pos0 * Mpe_pos0;
+	Theta_y_pos0 = Mpe_pos0 / Ke;
+	Theta_max_pos0 = Theta_y_pos0 + Theta_p_pos0;
+	slope_p_pos0 = (Mmax_pos0 - Mpe_pos0) / (Theta_p_pos0);
+	slope_pc_pos0 = Mmax_pos0 / (Theta_pc_pos0);
+	MpeProject_pos0 = Mmax_pos0 - slope_p_pos0 * Theta_max_pos0;
+	MmaxProject_pos0 = Mmax_pos0 + slope_pc_pos0 * Theta_max_pos0;
 
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    // %%%%%%%% INITIALIZE CURRENT BACKBONE VALUES AS PREVIOUS %%%%%%%%%%%%
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Mpe_neg0 = Mpe_neg0;
+	Mmax_neg0 = MmaxMpe_neg0 * Mpe_neg0;
+	Theta_y_neg0 = Mpe_neg0 / Ke;
+	Theta_max_neg0 = Theta_y_neg0 + Theta_p_neg0;
+	slope_p_neg0 = (Mmax_neg0 - Mpe_neg0) / (Theta_p_neg0);
+	slope_pc_neg0 = Mmax_neg0 / (Theta_pc_neg0);
+	MpeProject_neg0 = Mmax_neg0 - slope_p_neg0 * Theta_max_neg0;
+	MmaxProject_neg0 = Mmax_neg0 + slope_pc_neg0 * Theta_max_neg0;
 
     double	posFcap     = posFcap_1;
     double	posFy	    = posFy_1;
@@ -550,7 +557,83 @@ int IMKBilin::setTrialStrain(double	strain, double	strainRate)
     // %%%%%%%%%%%%%%%%%%%%%% END OF MAIN CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    return 0;
+	// Check if the Component inheret Reference Energy is Consumed
+	if (Excursion_Flag == 1) {
+		if ((Energy_total >= Ref_Energy_S) || (Energy_total >= Ref_Energy_C)) {
+			Energy_Flag = 1;
+		}
+		if ((beta_S_j > 1) || (beta_C_j > 1)) {
+			Energy_Flag = 1;
+		}
+	}
+	else if (Reversal_Flag == 1) {
+		if (Energy_total >= Ref_Energy_K) {
+			Energy_Flag = 1;
+		}
+		if (beta_K_j > 1) {
+			Energy_Flag = 1;
+		}
+	}
+
+	// if energy fail flag is reached in current step
+	if ((Energy_Flag == 1)) {
+		Mi = 0.0;
+	}
+
+	// %%%%%%%%%% PREPARE RETURN VALUES %%%%%%%%%%%%%
+
+	if (Ri >= Ri_1) {
+		K_j_1 = K_j;
+		Theta_y_pos_j_1		= Theta_y_pos_j;
+		Theta_max_pos_j_1	= Theta_max_pos_j;
+		slope_p_pos_j_1		= slope_p_pos_j;
+		slope_pc_pos_j_1	= slope_pc_pos_j;
+		Mpe_pos_j_1			= Mpe_pos_j;
+		MpeProject_pos_j_1	= MpeProject_pos_j;
+		Mmax_pos_j_1		= Mmax_pos_j;
+		MmaxProject_pos_j_1 = MmaxProject_pos_j;
+		Theta_u_pos0		= Theta_u_pos0;
+	}
+	else {
+		K_j_1 = K_j;
+		Theta_y_neg_j_1		= Theta_y_neg_j;
+		Theta_max_neg_j_1	= Theta_max_neg_j;
+		slope_p_neg_j_1		= slope_p_neg_j;
+		slope_pc_neg_j_1	= slope_pc_neg_j;
+		Mpe_neg_j_1			= Mpe_neg_j;
+		MpeProject_neg_j_1	= MpeProject_neg_j;
+		Mmax_neg_j_1		= Mmax_neg_j;
+		MmaxProject_neg_j_1 = MmaxProject_neg_j;
+		Theta_u_neg0		= Theta_u_neg0;
+	}
+
+	beta_S_j_1 = beta_S_j;
+	beta_C_j_1 = beta_C_j;
+	beta_K_j_1 = beta_K_j;
+
+	// Tangent Stiffeness Calculation
+	if (Mi == Mr_pos0 || Mi == -Mr_neg0) {
+		TangentK = pow(10., -6);
+	}
+
+	if (Ri == Ri_1) {
+		TangentK = Ke;
+		Mi = Mi_1;
+	}
+	else {
+		TangentK = (Mi - Mi_1) / (Ri - Ri_1);
+		if (TangentK == 0) {
+			TangentK = pow(10., -6);
+		}
+	}
+
+	//cout << "                Mi_1=" << Mi_1 << " Mi=" << Mi << " Ke=" << Ke << " TangentK=" << TangentK << " Mbound=" << Mi_boundary << endln;
+
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// %%%%%%%%%%%%%%%%%%%%%% END OF MAIN CODE %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	return 0;
 }
 
 double IMKBilin::getStress(void)
