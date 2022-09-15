@@ -101,7 +101,6 @@ private:
 // 3 Stiffness
     double  Ktangent,      cKtangent, ki;
     double  Kunload,       cKunload;
-    double  Kreload,       cKreload;	
 // 12 Positive U and F
     double  posUy,          cPosUy;
     double  posFy,          cPosFy;
@@ -132,9 +131,10 @@ private:
     double  engAcml,        cEngAcml;
     double  engDspt,        cEngDspt;
 // 3 Flag
-    bool   Failure_Flag,    cFailure_Flag;
-    bool   Yield_Flag,      cYield_Flag;
-    int    Branch,          cBranch;
+    bool    Failure_Flag,    cFailure_Flag;
+    bool    posYield_Flag,  cPosYield_Flag;
+    bool    negYield_Flag,  cNegYield_Flag;
+    int     Branch,          cBranch;
 // 2 Pinching
     double  Fpinch,         cFpinch;
     double  Upinch,         cUpinch;
