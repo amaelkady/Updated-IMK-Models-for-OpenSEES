@@ -34,8 +34,8 @@ class IMKPeakOriented : public UniaxialMaterial
 {
 public:
     IMKPeakOriented(int tag, double Ke,
-        double posUy_0, double posUcap_0, double posUu_0, double posFy_0, double posFcapFy_0, double posResF_0,
-        double negUy_0, double negUcap_0, double negUu_0, double negFy_0, double negFcapFy_0, double negResF_0,
+        double posUy_0, double posUcap_0, double posUu_0, double posFy_0, double posFcapFy_0, double posFresFy_0,
+        double negUy_0, double negUcap_0, double negUu_0, double negFy_0, double negFcapFy_0, double negFresFy_0,
         double LAMBDA_S, double LAMBDA_C, double LAMBDA_A, double LAMBDA_K, double c_S, double c_C, double c_A, double c_K, double D_pos, double D_neg);
     IMKPeakOriented();
     ~IMKPeakOriented();
@@ -64,13 +64,13 @@ private:
     double  posUu_0;
     double  posFy_0;
     double  posFcapFy_0;
-    double  posResF_0;
+    double  posFresFy_0;
     double  negUp_0;
     double  negUpc_0;
     double  negUu_0;
     double  negFy_0;
     double  negFcapFy_0;
-    double  negResF_0;
+    double  negFresFy_0;
     double  LAMBDA_S;
     double  LAMBDA_C;
     double  LAMBDA_A;
@@ -97,8 +97,8 @@ private:
     double  Fi,             cFi;
 // History Variables 
 // 3 Stiffness
-    double  Ktangent,      cKtangent, ki;
-    double  Kunload,       cKunload;
+    double  Ktangent,       cKtangent, ki;
+    double  Kunload,        cKunload;
 // 12 Positive U and F
     double  posUy,          cPosUy;
     double  posFy,          cPosFy;
@@ -129,10 +129,10 @@ private:
     double  engAcml,        cEngAcml;
     double  engDspt,        cEngDspt;    
 // 3 Flag
-    bool    Failure_Flag,    cFailure_Flag;
+    bool    Failure_Flag,   cFailure_Flag;
     bool    posYield_Flag,  cPosYield_Flag;
     bool    negYield_Flag,  cNegYield_Flag;
-    int     Branch,          cBranch;
+    int     Branch,         cBranch;
 };
 
 #endif
