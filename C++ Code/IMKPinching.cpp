@@ -39,24 +39,24 @@ static int numIMKPinchingMaterials = 0;
 void *
 OPS_IMKPinching()
 {
-    if (numIMKPinchingMaterials == 0) {
-        numIMKPinchingMaterials++;
+	if (numIMKPinchingMaterials == 0) {
+		numIMKPinchingMaterials++;
 		OPS_Error("IMK with Pinched Response - Code by AE_HJ (Sep22)\n", 1);
-    }
+	}
 
-    // Pointer to a uniaxial material that will be returned
-    UniaxialMaterial *theMaterial = 0;
+	// Pointer to a uniaxial material that will be returned
+	UniaxialMaterial *theMaterial = 0;
 
-    int    iData[1];
-    double dData[25];
-    int numData = 1;
+	int    iData[1];
+	double dData[25];
+	int numData = 1;
 
-    if (OPS_GetIntInput(&numData, iData) != 0) {
-        opserr << "WARNING invalid uniaxialMaterial IMKPinching tag" << endln;
-        return 0;
-    }
+	if (OPS_GetIntInput(&numData, iData) != 0) {
+		opserr << "WARNING invalid uniaxialMaterial IMKPinching tag" << endln;
+		return 0;
+	}
 
-    numData = 25;
+	numData = 25;
 
 
     if (OPS_GetDoubleInput(&numData, dData) != 0) {
@@ -69,20 +69,20 @@ OPS_IMKPinching()
 
 
 
-    // Parsing was successful, allocate the material
-    theMaterial = new IMKPinching(iData[0],
-        dData[0],
-        dData[1], dData[2], dData[3], dData[4], dData[5], dData[6],
-        dData[7], dData[8], dData[9], dData[10], dData[11], dData[12],
-        dData[13], dData[14], dData[15], dData[16], dData[17], dData[18], dData[19], dData[20],
-        dData[21], dData[22],dData[23], dData[24]);
+	// Parsing was successful, allocate the material
+	theMaterial = new IMKPinching(iData[0],
+		dData[0],
+		dData[1], dData[2], dData[3], dData[4], dData[5], dData[6],
+		dData[7], dData[8], dData[9], dData[10], dData[11], dData[12],
+		dData[13], dData[14], dData[15], dData[16], dData[17], dData[18], dData[19], dData[20],
+		dData[21], dData[22],dData[23], dData[24]);
 
-    if (theMaterial == 0) {
-        opserr << "WARNING could not create uniaxialMaterial of type IMKPinching Material\n";
-        return 0;
-    }
+	if (theMaterial == 0) {
+		opserr << "WARNING could not create uniaxialMaterial of type IMKPinching Material\n";
+		return 0;
+	}
 
-    return theMaterial;
+	return theMaterial;
 }
 
 IMKPinching::IMKPinching(int tag, double p_Ke,
@@ -94,7 +94,7 @@ IMKPinching::IMKPinching(int tag, double p_Ke,
     negUp_0(p_negUp_0), negUpc_0(p_negUpc_0), negUu_0(p_negUu_0), negFy_0(p_negFy_0), negFcapFy_0(p_negFcapFy_0), negFresFy_0(p_negFresFy_0),
     LAMBDA_S(p_LAMBDA_S), LAMBDA_C(p_LAMBDA_C), LAMBDA_A(p_LAMBDA_A), LAMBDA_K(p_LAMBDA_K), c_S(p_c_S), c_C(p_c_C), c_A(p_c_A), c_K(p_c_K), D_pos(p_D_pos), D_neg(p_D_neg), kappaF(p_kappaF), kappaD(p_kappaD)
 {
-    this->revertToStart();
+	this->revertToStart();
 }
 
 IMKPinching::IMKPinching()
@@ -103,18 +103,18 @@ IMKPinching::IMKPinching()
     negUp_0(0), negUpc_0(0), negUu_0(0), negFy_0(0), negFcapFy_0(0), negFresFy_0(0),
     LAMBDA_S(0), LAMBDA_C(0), LAMBDA_A(0), LAMBDA_K(0), c_S(0), c_C(0), c_A(0), c_K(0), D_pos(0), D_neg(0), kappaF(0), kappaD(0)
 {
-    this->revertToStart();
+	this->revertToStart();
 }
 
 IMKPinching::~IMKPinching()
 {
-    // does nothing
+	// does nothing
 }
 
 int IMKPinching::setTrialStrain(double strain, double strainRate)
 {
-    //all variables to the last commit
-    this->revertToLastCommit();
+	//all variables to the last commit
+	this->revertToLastCommit();
 
     //state determination algorithm: defines the current force and tangent stiffness
     U		= strain; //set trial displacement
@@ -562,6 +562,9 @@ int IMKPinching::setTrialStrain(double strain, double strainRate)
         }
     }
     engAcml	+= dEi; 	            // Energy
+    if (ki==0) {
+        ki  = 1e-6;
+    }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////// END OF MAIN CODE ///////////////////////////////////////////////////////
@@ -573,8 +576,8 @@ int IMKPinching::setTrialStrain(double strain, double strainRate)
 
 double IMKPinching::getStress(void)
 {
-    //cout << " getStress" << endln;
-    return (Fi);
+	//cout << " getStress" << endln;
+	return (fi);
 }
 
 double IMKPinching::getTangent(void)
@@ -585,19 +588,19 @@ double IMKPinching::getTangent(void)
 
 double IMKPinching::getInitialTangent(void)
 {
-    //cout << " getInitialTangent" << endln;
-    return (Ke);
+	//cout << " getInitialTangent" << endln;
+	return (Ke);
 }
 
 double IMKPinching::getStrain(void)
 {
-    //cout << " getStrain" << endln;
-    return (U);
+	//cout << " getStrain" << endln;
+	return (U);
 }
 
 int IMKPinching::commitState(void)
 {
-    //cout << " commitState" << endln;
+	//cout << " commitState" << endln;
 
     //commit trial  variables
 // 3 State
@@ -867,8 +870,8 @@ IMKPinching::getCopy(void)
 
 int IMKPinching::sendSelf(int cTag, Channel &theChannel)
 {
-    int res = 0;
-    cout << " sendSelf" << endln;
+	int res = 0;
+	cout << " sendSelf" << endln;
 
     static Vector data(144);
     data(0) = this->getTag();
@@ -1005,7 +1008,11 @@ int IMKPinching::sendSelf(int cTag, Channel &theChannel)
     if (res < 0)
         opserr << "IMKPinching::sendSelf() - failed to send data\n";
 
-    return res;
+	res = theChannel.sendVector(this->getDbTag(), cTag, data);
+	if (res < 0)
+		opserr << "IMKPinching::sendSelf() - failed to send data\n";
+
+	return res;
 }
 
 int IMKPinching::recvSelf(int cTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
@@ -1152,10 +1159,10 @@ int IMKPinching::recvSelf(int cTag, Channel &theChannel, FEM_ObjectBroker &theBr
         cEngDspt        = data(136);
     }
 
-    return res;
+	return res;
 }
 
 void IMKPinching::Print(OPS_Stream &s, int flag)
 {
-    cout << "IMKPinching tag: " << this->getTag() << endln;
+	cout << "IMKPinching tag: " << this->getTag() << endln;
 }
