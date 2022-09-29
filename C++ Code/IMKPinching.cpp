@@ -577,7 +577,7 @@ int IMKPinching::setTrialStrain(double strain, double strainRate)
 double IMKPinching::getStress(void)
 {
 	//cout << " getStress" << endln;
-	return (fi);
+	return (Fi);
 }
 
 double IMKPinching::getTangent(void)
