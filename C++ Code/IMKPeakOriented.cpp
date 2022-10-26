@@ -227,7 +227,7 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
                 posKp       *= (1 - betaS * D_pos); // Post-Yield Stiffness
                 FcapProj    *= (1 - betaC * D_pos);
                 posUglobal  *= (1 + betaA * D_pos); // Accelerated Reloading Stiffness
-                posUy   = posFy / Ke;
+                posUy       = posFy / Ke;
             // Capping Point
                 FyProj      = posFy - posKp*posUy;
                 posUcap     = (FcapProj - FyProj) / (posKp - posKpc);
@@ -261,7 +261,6 @@ int IMKPeakOriented::setTrialStrain(double strain, double strainRate)
                 FyProj      = negFy - negKp*negUy;
                 negUcap     = (FcapProj - FyProj) / (negKp - negKpc);
                 negFcap     = FyProj + negKp*negUcap;
-                }
             // Global Peak on the Updated Backbone
                 if (negUy < negUglobal) {           // Elastic Branch
                     negFglobal	= Ke * negUglobal; 

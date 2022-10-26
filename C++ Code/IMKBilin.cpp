@@ -177,6 +177,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
                 FyProj      = posFy - posKp*posUy;
                 posUcap     = posKp <= posKpc ? 0 : (FcapProj - FyProj) / (posKp - posKpc);
                 posFcap     = FyProj + posKp*posUcap;
+            // When a part of backbone is beneath the residual strength
                 double candidateKp = (posFcap - posFres) / (posUcap - Ui - (posFres - Fi)/Kunload);                
                 if (posFcap < posFres) {
                     posFy   = posFres;
@@ -203,6 +204,7 @@ int IMKBilin::setTrialStrain(double strain, double strainRate)
                 FyProj      = negFy - negKp*negUy;
                 negUcap     = negKp <= negKpc ? 0 : (FcapProj - FyProj) / (negKp - negKpc);
                 negFcap     = FyProj + negKp*negUcap;
+            // When a part of backbone is beneath the residual strength
                 double candidateKp = (negFcap - negFres) / (negUcap - Ui - (negFres - Fi)/Kunload);
                 if (negFcap > negFres) {
                     negFy   = negFres;
