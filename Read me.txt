@@ -1,3 +1,0 @@
-*** UPDATE August 2020 ***
---> Use the provided OpenSEES executable "OpenSees.exe" directly. This compiled executable contains the most updated IMK models.
---> You will need to download the "tcl86t.dll" file and place it in the same directory as the executable.
